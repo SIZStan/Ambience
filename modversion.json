@@ -1,5 +1,8 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/ambience-extras/files",
+  "1.16.5": {
+    "1.0.0": "Updated the mod to the 1.16.5 version!"
+  },
   "1.16.4": {
     "1.0.1": "BUGFIX - Fixed a couple of bugs regarding the ocarina.\nBUGFIX -  Fixed a couple of bugs in the screens.\nCHANGE - Migrated all the features from 1.15 to 1.16 except the structures cinematic transitions.",
     "1.0.0": "Migrated to the 1.16.4 version!!!"   
@@ -43,6 +46,8 @@
     "1.7.8": "BUGFIX - Fixed a bug in the Horn where it wasn't working properly in multiplayer"
   },
   "promos": {
+    "1.16.5-latest": "1.0.0",
+    "1.16.5-recommended": "1.0.0",
     "1.16.4-latest": "1.0.1",
     "1.16.4-recommended": "1.0.1",
     "1.15.2-latest": "1.0.7.4",
