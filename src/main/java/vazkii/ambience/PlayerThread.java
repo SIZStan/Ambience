@@ -141,7 +141,9 @@ public class PlayerThread extends Thread {
 			if(device != null && device instanceof JavaSoundAudioDevice) {
 				try {
 					((JavaSoundAudioDevice) device).setGain(realGain);
-				} catch(IllegalArgumentException e) { } // If you can't fix the bug just put a catch around it
+				} catch(IllegalArgumentException e) {
+					e.printStackTrace();
+				} // If you can't fix the bug just put a catch around it
 			}
 		}
 		

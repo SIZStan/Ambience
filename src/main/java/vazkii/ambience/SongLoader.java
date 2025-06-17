@@ -140,7 +140,7 @@ public final class SongLoader {
 						
 						String mobName = joinTokensExceptFirst(tokens).replaceAll("\\+", " ");
 						
-						SongPicker.mobMap.put(mobName, props.getProperty(s).split(","));
+						SongPicker.mobMap.put(mobName.toLowerCase(), props.getProperty(s).split(","));
 					} else if (keyType.equals("effect")) {
 						String event = tokens[1];
 												
@@ -151,8 +151,11 @@ public final class SongLoader {
 						else {		
 							SongPicker.effectMap.put(event, props.getProperty(s).split(","));				
 						}
+					} else if (keyType.equals("mobaround")) {
+						String mobName = joinTokensExceptFirst(tokens).replaceAll("\\+", " ");
+
+						SongPicker.aroundMap.put(mobName, props.getProperty(s).split(","));
 					}
-					
 					else if (keyType.equals("ocarina")) {
 						String event = tokens[1];						
 						
@@ -202,6 +205,7 @@ public final class SongLoader {
 		SongPicker.biomeMap= new HashMap();
 		SongPicker.areasMap = new HashMap();
 		SongPicker.mobMap = new HashMap();
+		SongPicker.aroundMap = new HashMap<>();
 		SongPicker.primaryTagMap =new HashMap();
 		SongPicker.secondaryTagMap =new HashMap();
 		SongPicker.transitionsMap = new ArrayList<String>();

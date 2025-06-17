@@ -100,9 +100,8 @@ public class EventHandlers {
 	public static int fadeInTicks = FADE_DURATION-1;
 	public static boolean fadeIn = false;
 	public static int silenceTicks = 0;
-	
-	public int attackFadeTime = 300;
-	public static int attackingTimer;
+
+	public static long attackingExitTimer;
 	static Entity currentplayer;
 	public static KeyBinding[] keyBindings;
 	public static float oldVolume;
@@ -149,7 +148,7 @@ public class EventHandlers {
 	// constructor
 	public EventHandlers(Ambience amb) {
 		this.ambience = amb;
-		attackingTimer = attackFadeTime;
+		attackingExitTimer = System.currentTimeMillis() + AmbienceConfig.attackFadeTime * 1000L;
 		GameSettings settings = Minecraft.getMinecraft().gameSettings;
 		oldVolume=settings.getSoundLevel(SoundCategory.MASTER);
 
@@ -263,7 +262,7 @@ public class EventHandlers {
 	}
 	
 	private static void getSongLenght() {
-		// Obtém o tempo do som selecionado
+		// Obtï¿½m o tempo do som selecionado
 		File f = new File(Ambience.ambienceDir+"\\music\\", AdvancementSong + ".mp3");
 
 		if (f.isFile()) {
@@ -507,7 +506,7 @@ public class EventHandlers {
 	public void onEntitySetAttackTargetEvent(LivingAttackEvent event) {
 		if (event.getEntityLiving() instanceof EntityPlayer) {			
 			Ambience.attacked = true;
-			attackingTimer = attackFadeTime;
+			attackingExitTimer = System.currentTimeMillis() + AmbienceConfig.attackFadeTime * 1000L;
 
 			EventHandlers.playInstant();			
 		}
@@ -522,7 +521,7 @@ public class EventHandlers {
 			// if (event.getTarget().isCreatureType(EnumCreatureType.MONSTER, false)) {
 			Ambience.attacked = true;
 
-			attackingTimer = attackFadeTime;
+			attackingExitTimer = System.currentTimeMillis() + AmbienceConfig.attackFadeTime * 1000L;
 			EventHandlers.playInstant();
 		}
 	}
@@ -661,7 +660,7 @@ public class EventHandlers {
 					if(nextSong == null || !songs.contains(nextSong)) {
 						do {
 							song = SongPicker.getRandomSong();
-						} while(song.equals(currentSong) && songs.contains(","));
+						} while(song != null && song.equals(currentSong) && songs.contains(","));
 					} else
 						song = nextSong;
 				}
@@ -705,7 +704,7 @@ public class EventHandlers {
 					if(nextSong != null && nextSong.equals(song))
 						waitTick--;				
 					
-					if (!song.equals(currentSong)) {
+					if (song != null && !song.equals(currentSong)) {
 						if (currentSong != null && PlayerThread.currentSong != null && !PlayerThread.currentSong.equals(song) && songs.equals(PlayerThread.currentSongChoices))
 							currentSong = PlayerThread.currentSong;
 						else
@@ -816,7 +815,7 @@ public class EventHandlers {
 	public static void changeSongTo(String song) 
 	{		
 		//para de tocar as musicas caso esteja em outra dimensao
-		if(song=="null") {
+		if(song != null && song.equals("null")) {
 			Ambience.thread.playing=false;
 			Ambience.thread.setGain(0);
 		}

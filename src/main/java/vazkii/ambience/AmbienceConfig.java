@@ -25,6 +25,14 @@ public class AmbienceConfig {
 	@Config.Name("In Battle Distance")
 	@Config.Comment("Defines the distance in blocks between the player and hostile mobs to determine if still in combat or not [Default:16,Range:10~128]")	
 	public static int attackedDistance = 16;
+
+	@Config.Name("Mob Around Distance")
+	@Config.Comment("Defines the distance in mob around")
+	public static int mobAroundDistance = 16;
+
+	@Config.Name("Attack Fade Time")
+	@Config.Comment("Defines the time to leave combat [Default:30] (Second)")
+	public static int attackFadeTime = 30;
 	
 	@Config.Name("Lost Focus Fade Out")
 	@Config.Comment("Fade Out Sound Volume on Game Lost Focus[Default:true]")			

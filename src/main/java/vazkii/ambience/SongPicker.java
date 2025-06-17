@@ -117,7 +117,8 @@ public final class SongPicker {
 	public static Map<String, String[]> eventMap = new HashMap();
 	public static Map<Biome, String[]> biomeMap = new HashMap();
 	public static Map<String, String[]> areasMap = new HashMap();	
-	public static Map<String, String[]> mobMap = new HashMap();	
+	public static Map<String, String[]> mobMap = new HashMap();
+	public static Map<String, String[]> aroundMap = new HashMap();
 	public static Map<String, String[]> effectMap = new HashMap();	
 	public static Map<String, Long> cinematicMap = new HashMap<String, Long>();	
 	public static Map<BiomeDictionary.Type, String[]> primaryTagMap = new HashMap();
@@ -148,6 +149,7 @@ public final class SongPicker {
 		biomeMap.clear();
 		areasMap.clear();
 		mobMap.clear();
+		aroundMap.clear();
 		primaryTagMap.clear();
 		secondaryTagMap.clear();
 	}
@@ -226,11 +228,10 @@ public final class SongPicker {
 						
 		//Silences all the musics while playing the ocarina
 		if(Ocarina.playing) {
-			String[] song={"silent"};
-			return song;
+            return new String[]{"silent"};
 		}
 		
-		if(Ambience.ExternalEvent.event!="")
+		if(!Ambience.ExternalEvent.event.isEmpty())
 		{
 			return  getSongsForEvent(Ambience.ExternalEvent.event);
 		}
@@ -238,9 +239,8 @@ public final class SongPicker {
 		double distance = Math.sqrt(player.getDistanceSq(lastPlayerPos.getX(), lastPlayerPos.getY(), lastPlayerPos.getZ()));
 		
 		if(Ambience.playingJuckebox & distance<50) {
-			String[] song={"silent"};
-			
-			return song;
+
+            return new String[]{"silent"};
 		}
 		
 		GuiBossOverlay bossOverlay = mc.ingameGUI.getBossOverlay();
@@ -312,7 +312,7 @@ public final class SongPicker {
 					mobName = mob.getName().toLowerCase();
 					
 
-					if (!(mob instanceof EntityPlayer) )
+					if (mob instanceof EntityLiving)
 						//if(mob instanceof EntityMob) {
 						if( mob.isCreatureType(EnumCreatureType.MONSTER, false) | ((EntityLiving) mob).canAttackClass(player.getClass())) {
 						countEntities++;
@@ -339,7 +339,7 @@ public final class SongPicker {
 				
 				//****************
 				//Termina a musica de ataque
-				if (mobName == null || countEntities < 1  || EventHandlers.attackingTimer-- < 0) {
+				if (mobName == null || countEntities < 1  || System.currentTimeMillis() > EventHandlers.attackingExitTimer) {
 					Ambience.attacked = false;
 				}
 				
@@ -366,6 +366,19 @@ public final class SongPicker {
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 			}
+		}
+
+		int mobAroundDistance = AmbienceConfig.mobAroundDistance;
+		List<EntityLivingBase> mobAround = world.getEntitiesWithinAABB(EntityLivingBase.class,
+				new AxisAlignedBB(player.posX - mobAroundDistance, player.posY - mobAroundDistance, player.posZ - mobAroundDistance, player.posX + mobAroundDistance,
+						player.posY + mobAroundDistance, player.posZ + mobAroundDistance));
+
+		for (EntityLivingBase mob : mobAround) {
+
+			String mobName = mob.getName().toLowerCase();
+
+			if (aroundMap.containsKey(mobName) && !(mob instanceof EntityPlayer))
+				return aroundMap.get(mobName);
 		}
 		
 		// ******************
@@ -441,7 +454,7 @@ public final class SongPicker {
 		}
 		
 		//Events for the World Structures
-		if(StructureName!="") 
+		if(!StructureName.isEmpty())
 		{		
 			String[] songs=null;
 			//Songs for other dimensions
@@ -972,7 +985,7 @@ public final class SongPicker {
 	private static int getSongLenght(String song) {
 		
 		int songLenght=0;
-		// Obtém o tempo do som selecionado********************
+		// Obtï¿½m o tempo do som selecionado********************
 		File f = new File(Ambience.ambienceDir+"\\music", song + ".mp3");
 
 		if (f.isFile()) {
