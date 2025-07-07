@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
@@ -26,6 +27,8 @@ public final class SongLoader {
 
 	public static File mainDir;
 	public static boolean enabled = false;
+	// 用于跟踪已经记录过错误的文件，防止重复记录
+	private static Set<String> loggedMissingFiles = new HashSet<String>();
 	
 	
 	public static void loadFrom(File f) {
@@ -210,6 +213,8 @@ public final class SongLoader {
 		SongPicker.secondaryTagMap =new HashMap();
 		SongPicker.transitionsMap = new ArrayList<String>();
 		Ocarina.songsMap=new HashMap<String, String[]>();
+		// 重置时清空已记录的缺失文件列表
+		loggedMissingFiles.clear();
 	}
 
 	public static void initConfig(File f) {
@@ -235,8 +240,13 @@ public final class SongLoader {
 		try {
 			return new FileInputStream(f);
 		} catch (FileNotFoundException e) {
-			FMLLog.log(Level.ERROR, "File " + f + " not found. Fix your Ambience config!");
-			e.printStackTrace();
+			String fileName = f.getAbsolutePath();
+			// 只有当该文件没有被记录过时才记录错误
+			if (!loggedMissingFiles.contains(fileName)) {
+				FMLLog.log(Level.ERROR, "File " + f + " not found. Fix your Ambience config!");
+				e.printStackTrace();
+				loggedMissingFiles.add(fileName);
+			}
 			return null;
 		}
 	}
