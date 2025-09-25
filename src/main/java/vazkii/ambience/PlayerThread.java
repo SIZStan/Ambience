@@ -122,7 +122,7 @@ public class PlayerThread extends Thread {
 	}
 	
 	public void setGain(float gain) {
-		this.gain = Math.min(MAX_GAIN, Math.max(MIN_GAIN, gain));
+		PlayerThread.gain = Math.min(MAX_GAIN, Math.max(MIN_GAIN, gain));
 
 		if(player == null)
 			return;
@@ -132,10 +132,12 @@ public class PlayerThread extends Thread {
 	
 	public void setRealGain() {
 		GameSettings settings = Minecraft.getMinecraft().gameSettings;
-		float musicGain = settings.getSoundLevel(SoundCategory.MUSIC) * settings.getSoundLevel(SoundCategory.MASTER);
-		float realGain = (MIN_GAIN + (this.gain - MIN_GAIN) * musicGain);//this.gain*musicGain;//
+		// Use sqrt(product) to reduce excessive attenuation when MASTER is low,
+		// keeping both sliders influential but avoiding double-dipping too hard.
+		float musicGain = (float) Math.sqrt(settings.getSoundLevel(SoundCategory.MUSIC) * settings.getSoundLevel(SoundCategory.MASTER));
+		float realGain = (MIN_GAIN + (PlayerThread.gain - MIN_GAIN) * musicGain);
 		
-		this.realGain = realGain;
+		PlayerThread.realGain = realGain;
 		if(player != null) {
 			AudioDevice device = player.getAudioDevice();
 			if(device != null && device instanceof JavaSoundAudioDevice) {
